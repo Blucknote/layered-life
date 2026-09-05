@@ -1,0 +1,25 @@
+name: Nightly maintenance check
+
+on:
+  schedule:
+    - cron: '37 5 * * *'
+  workflow_dispatch:
+
+jobs:
+  drift:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install
+        run: npm ci
+      - name: Tests on latest toolchain
+        run: npm test
+      - name: Build
+        run: npm run build
+      - name: Dependency audit (informative)
+        continue-on-error: true
+        run: npm audit --omit=dev

@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Трёхслойная «Жизнь»</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <div id="app">
+    <div id="scene-wrap">
+      <canvas id="scene"></canvas>
+      <div id="webgl-error" hidden>
+        <div>
+          <h1>WebGL недоступен</h1>
+          <p>Для отображения сцены нужен браузер с поддержкой WebGL.<br />
+          Симуляция не запущена. Включите аппаратное ускорение или откройте страницу в другом браузере.</p>
+        </div>
+      </div>
+      <div id="legend">
+        <span class="legend-item"><span class="chip" data-layer="0"></span> Слой 1</span>
+        <span class="legend-item"><span class="chip" data-layer="1"></span> Слой 2</span>
+        <span class="legend-item"><span class="chip" data-layer="2"></span> Слой 3</span>
+      </div>
+    </div>
+
+    <aside id="panel">
+      <fieldset>
+        <legend>Симуляция</legend>
+        <div class="row">
+          <button id="toggle-run" type="button">Старт</button>
+          <button id="step" type="button">Шаг</button>
+        </div>
+        <div class="row">
+          <label for="speed">Скорость</label>
+          <input id="speed" type="range" min="1" max="30" step="1" value="5" />
+          <output id="speed-value" for="speed">5</output>
+          <span class="hint">поколений/с</span>
+        </div>
+        <div class="row">
+          <span>Поколение: <b id="gen-value">0</b></span>
+          <span>Живых: <b id="live-total">0</b></span>
+        </div>
+        <div class="row">
+          <span id="live-layers" class="hint">по этажам: 1: 0 · 2: 0 · 3: 0</span>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Редактирование</legend>
+        <div class="row">
+          <span>Активный слой:</span>
+          <label><input type="radio" name="layer" value="0" /> 1</label>
+          <label><input type="radio" name="layer" value="1" checked /> 2</label>
+          <label><input type="radio" name="layer" value="2" /> 3</label>
+        </div>
+        <div class="row">
+          <span>Инструмент:</span>
+          <label><input type="radio" name="tool" value="camera" checked /> Камера</label>
+          <label><input type="radio" name="tool" value="add" /> Добавить</label>
+          <label><input type="radio" name="tool" value="remove" /> Удалить</label>
+        </div>
+        <div class="row">
+          <label for="density">Плотность, %</label>
+          <input id="density" type="number" min="0" max="100" step="1" value="15" />
+          <label for="seed">Seed</label>
+          <input id="seed" type="number" min="0" max="4294967295" step="1" value="42" />
+        </div>
+        <div class="row">
+          <button id="random" type="button">Случайное заполнение</button>
+          <button id="clear" type="button">Очистить все слои</button>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Правила</legend>
+        <div class="toggles">
+          <div>Рождение B</div>
+          <div id="birth-toggles" class="toggle-grid"></div>
+        </div>
+        <div class="toggles">
+          <div>Выживание S</div>
+          <div id="survive-toggles" class="toggle-grid"></div>
+        </div>
+        <div class="row">
+          <label><input id="coupling" type="checkbox" checked /> Межслойная связь</label>
+        </div>
+        <div class="row">
+          <button id="reset-rules" type="button">Базовые правила B={3}, S={2,3}</button>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Старт</legend>
+        <div class="row">
+          <button id="remember-start" type="button">Запомнить старт</button>
+          <button id="restore-start" type="button">Вернуть старт</button>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Вид</legend>
+        <div class="row">
+          <label><input id="vis-0" type="checkbox" checked /> Слой 1</label>
+          <label><input id="vis-1" type="checkbox" checked /> Слой 2</label>
+          <label><input id="vis-2" type="checkbox" checked /> Слой 3</label>
+        </div>
+        <div class="row hint">Скрытый слой продолжает участвовать в расчёте.</div>
+        <div class="row">
+          <label for="gap">Расстояние этажей</label>
+          <input id="gap" type="range" min="1" max="6" step="0.1" value="2.5" />
+          <output id="gap-value" for="gap">2.5</output>
+        </div>
+        <div class="hint">Расстояние этажей — только визуальное раздвижение и не меняет правила.</div>
+        <div class="row">
+          <button id="reset-camera" type="button">Сбросить ракурс</button>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Экспорт / импорт</legend>
+        <div class="row">
+          <button id="export" type="button">Экспорт JSON</button>
+          <label class="file-button">Импорт JSON<input id="import" type="file" accept=".json,application/json" hidden /></label>
+        </div>
+        <div id="status" role="status" aria-live="polite"></div>
+      </fieldset>
+
+      <div class="hint">Клавиши: Space — старт/пауза, N — шаг, 1/2/3 — активный слой.</div>
+    </aside>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
